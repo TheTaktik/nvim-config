@@ -20,59 +20,61 @@ vim.keymap.set("n", "<leader>Y", '"+Y', {noremap=true})
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+    vim.fn.system({
+	"git",
+	"clone",
+	"--filter=blob:none",
+	"https://github.com/folke/lazy.nvim.git",
+	"--branch=stable", -- latest stable release
+	lazypath,
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
-	{
-		"catppuccin/nvim",
-		name = "catppuccin",
-		lazy = false,
-		priority = 1000,
-		config = function()
-			vim.cmd([[colorscheme catppuccin]])
-		end,
+    {
+	"catppuccin/nvim",
+	name = "catppuccin",
+	lazy = false,
+	priority = 1000,
+	config = function()
+	    vim.cmd([[colorscheme catppuccin]])
+	end,
+    },
+    {"nvim-treesitter/nvim-treesitter", build = ":TSUpdate"},
+    {
+	"nvim-telescope/telescope.nvim",
+	tag = "0.1.5",
+	dependencies = { "nvim-lua/plenary.nvim" },
+    },
+    "tpope/vim-fugitive",
+    "tpope/vim-surround",
+    "airblade/vim-gitgutter",
+    -- Mason
+    'williamboman/mason.nvim',
+    'williamboman/mason-lspconfig.nvim',
+    -- LSP Support
+    {
+	'VonHeikemen/lsp-zero.nvim',
+	branch = 'v3.x',
+	lazy = true,
+	config = false,
+    },
+    {
+	'neovim/nvim-lspconfig',
+	dependencies = {
+	    {'hrsh7th/cmp-nvim-lsp'},
+	}
+    },
+    -- Autocompletion
+    {
+	'hrsh7th/nvim-cmp',
+	dependencies = {
+	    {'L3MON4D3/LuaSnip'},
+	    {'hrsh7th/cmp-buffer'},
+	    {'hrsh7th/cmp-path'},
 	},
-	{"nvim-treesitter/nvim-treesitter", build = ":TSUpdate"},
-	{
-		"nvim-telescope/telescope.nvim",
-		tag = "0.1.5",
-		dependencies = { "nvim-lua/plenary.nvim" },
-	},
-	"tpope/vim-fugitive",
-	"tpope/vim-surround",
-	"airblade/vim-gitgutter",
-	-- Mason
-	'williamboman/mason.nvim',
-	'williamboman/mason-lspconfig.nvim',
-	-- LSP Support
-	{
-		'VonHeikemen/lsp-zero.nvim',
-		branch = 'v3.x',
-		lazy = true,
-		config = false,
-	},
-	{
-		'neovim/nvim-lspconfig',
-		dependencies = {
-			{'hrsh7th/cmp-nvim-lsp'},
-		}
-	},
-	-- Autocompletion
-	{
-		'hrsh7th/nvim-cmp',
-		dependencies = {
-			{'L3MON4D3/LuaSnip'}
-		},
-	},
+    },
 }
 
 require("lazy").setup(plugins)
@@ -89,16 +91,26 @@ vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 local lsp_zero = require('lsp-zero')
 
 lsp_zero.on_attach(function(client, bufnr)
-  -- see :help lsp-zero-keybindings
-  -- to learn the available actions
-  lsp_zero.default_keymaps({buffer = bufnr})
+    -- see :help lsp-zero-keybindings
+    -- to learn the available actions
+    lsp_zero.default_keymaps({buffer = bufnr})
 end)
 
 --- if you want to know more about lsp-zero and mason.nvim
 --- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guides/integrate-with-mason-nvim.md
 require('mason').setup({})
 require('mason-lspconfig').setup({
-  handlers = {
-    lsp_zero.default_setup,
-  },
+    handlers = {
+	lsp_zero.default_setup,
+    },
+})
+
+-- completion
+
+require('cmp').setup({
+    sources = {
+	{name = 'nvim_lsp'},
+	{name = 'buffer'},
+	{name = 'path'},
+    }
 })
