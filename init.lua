@@ -11,10 +11,25 @@ vim.keymap.set("n", "]q", ":cnext<CR>", {noremap=true})
 vim.keymap.set("n", "[q", ":cprev<CR>", {noremap=true})
 vim.keymap.set("n", "]l", ":lnext<CR>", {noremap=true})
 vim.keymap.set("n", "[l", ":lprev<CR>", {noremap=true})
-vim.keymap.set("v", "<leader>y", '"+y', {noremap=true})
-vim.keymap.set("v", "<leader>Y", '"+Y', {noremap=true})
-vim.keymap.set("n", "<leader>y", '"+y', {noremap=true})
-vim.keymap.set("n", "<leader>Y", '"+Y', {noremap=true})
+
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+
+vim.keymap.set("n", "<C-d>", "<C-d>zz")
+vim.keymap.set("n", "<C-u>", "<C-u>zz")
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
+
+vim.keymap.set("x", "<leader>p", [["_dP]])
+
+vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
+vim.keymap.set("n", "<leader>Y", [["+Y]])
+
+vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
+
+vim.keymap.set("n", "Q", "<nop>")
+
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 
 -- lazy.nvim
 
@@ -75,6 +90,8 @@ local plugins = {
 	    {'hrsh7th/cmp-path'},
 	},
     },
+    -- tmux integration
+    'christoomey/vim-tmux-navigator'
 }
 
 require("lazy").setup(plugins)
@@ -91,9 +108,21 @@ vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 local lsp_zero = require('lsp-zero')
 
 lsp_zero.on_attach(function(client, bufnr)
-    -- see :help lsp-zero-keybindings
-    -- to learn the available actions
-    lsp_zero.default_keymaps({buffer = bufnr})
+    local opts = {buffer = bufnr, remap = false}
+
+    vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
+    vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
+
+    vim.keymap.set("n", "gd", "<CMD>Telescope lsp_definitions<CR>", opts)
+    vim.keymap.set("n", "gr", "<CMD>Telescope lsp_references<CR>", opts)
+    vim.keymap.set("n", "gi", "<CMD>Telescope lsp_implementations<CR>", opts)
+
+    vim.keymap.set("n", "<leader>vd", "<CMD>Telescope diagnostics<CR>", opts)
+    vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
+    vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
+
+    vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
+    vim.keymap.set("n", "<leader>ciw", function() vim.lsp.buf.rename() end, opts)
 end)
 
 --- if you want to know more about lsp-zero and mason.nvim
@@ -114,3 +143,10 @@ require('cmp').setup({
 	{name = 'path'},
     }
 })
+
+-- tmux integration
+vim.g.tmux_navigator_no_mappings = 1
+vim.keymap.set("n", "<C-h>", vim.cmd.TmuxNavigateLeft)
+vim.keymap.set("n", "<C-j>", vim.cmd.TmuxNavigateDown)
+vim.keymap.set("n", "<C-k>", vim.cmd.TmuxNavigateUp)
+vim.keymap.set("n", "<C-l>", vim.cmd.TmuxNavigateRight)
