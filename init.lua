@@ -49,6 +49,7 @@ local plugins = {
 	},
 	"tpope/vim-fugitive",
 	"tpope/vim-surround",
+	"airblade/vim-gitgutter",
 	-- Mason
 	'williamboman/mason.nvim',
 	'williamboman/mason-lspconfig.nvim',
