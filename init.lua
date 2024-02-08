@@ -3,6 +3,13 @@
 vim.g.mapleader = " "
 vim.wo.number = true
 vim.wo.relativenumber = true
+vim.opt.expandtab = true
+vim.opt.shiftwidth = 4
+vim.opt.tabstop = 4
+-- disable netrw
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- TODO preserve undo hist
 
 -- native key remaps
@@ -91,7 +98,11 @@ local plugins = {
 	},
     },
     -- tmux integration
-    'christoomey/vim-tmux-navigator'
+    'christoomey/vim-tmux-navigator',
+    -- tree
+    {
+	'nvim-tree//nvim-tree.lua',
+    }
 }
 
 require("lazy").setup(plugins)
@@ -134,6 +145,9 @@ require('mason-lspconfig').setup({
     },
 })
 
+-- order diagnostics by severity
+vim.diagnostic.config({severity_sort = true})
+
 -- completion
 
 require('cmp').setup({
@@ -150,3 +164,6 @@ vim.keymap.set("n", "<C-h>", vim.cmd.TmuxNavigateLeft)
 vim.keymap.set("n", "<C-j>", vim.cmd.TmuxNavigateDown)
 vim.keymap.set("n", "<C-k>", vim.cmd.TmuxNavigateUp)
 vim.keymap.set("n", "<C-l>", vim.cmd.TmuxNavigateRight)
+
+-- nvim tree
+require('nvim-tree').setup({})
